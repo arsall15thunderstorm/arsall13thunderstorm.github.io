@@ -1,0 +1,844 @@
+/******
+ * Alien Hop by MdNoLr
+ * 
+ *****/
+
+noStroke();
+frameRate(25);
+
+var charX= 305;
+var charY= 72;
+var brace;
+var mouthX= charX +15;
+var eyeX= charX + 10;
+var feetX = charX;
+var feetY = charY +20000000000;
+var times=0;
+var facingRight = true;
+
+var loopCount=0;
+var loopCount10=0;
+
+var jumping = false;
+var falling = true;
+var fallSpeed=2;
+var velocity=20;
+var maxVelocity = 100;
+var jumpSpeed;
+var jumpHeight;
+var maxJump = 10000000010000000000000;
+var goLeft;
+var goRight;
+var powerUp;
+var powerLeft=0;
+var spawn="___";
+var star=getImage("cute/Star");
+var scoreText=createFont("comic sans ms",20);
+var normText=createFont("futura",12);
+var state=0;
+
+
+
+var bars={
+    x:[0,180,random(50,350),random(50,350),random(50,350),random(50,350)],y:[0,280,random(0,100),random(-50,50),random(-50,0),random(-100,-30)],type:[0,0,0,0,0],used:[0,0,0,0,0],Rmax:[],veloc:[]
+};
+
+var monsters={
+    x:[0,0,0],y:[0,0,0],type:[0,0,0],veloc:[0,0,0],step:[0,0,0]
+};
+
+var started = false;
+var score= 0;
+var dead=false;
+var dazed=false;
+
+
+var count = function(){
+    
+    if(loopCount === 1)
+    {
+   loopCount = 0;
+    }else{
+        loopCount++;
+    }
+    if(loopCount10 === 4)
+    {
+   loopCount10 = 0;
+    }else{
+        loopCount10++;
+    }
+};
+
+var start = function(){
+    state=1;
+    charX= 180;
+    charY= 72;
+};
+
+
+
+var restart = function(){
+    
+    score = 0;
+
+ 
+ charX= 194;
+ charY= 72;
+ bars={
+    x:[random(50,350),180,random(50,350),random(50,350),random(50,350)],y:[random(300,350),250,random(100,150),random(0,100),random(-50,0)],type:[],used:[],Rmax:[],veloc:[]
+};
+monsters={
+    x:[0,0,0],y:[0,0,0],type:[0,0,0],veloc:[0,0,0],step:[0,0,0]
+};
+ falling= true;
+ jumping=false;
+ times++;
+ dead=false;
+ dazed=false;
+ powerUp=4000;
+ powerLeft=900
+ ;
+
+};
+
+var makeButton = function(x,y,label,value){
+    
+    var buttonL=label.length*8+12;
+    fill(214, 204, 88);
+    if(mouseX>x&&mouseX<x+buttonL&&mouseY>y&&mouseY<y+30){
+        fill(143, 138, 36);
+        if(mouseIsPressed){
+         value(label);
+        }
+    }
+    rect(x,y,buttonL,30,20);
+    fill(0, 0, 0);
+    textSize(12);
+    text(label,x+10,y+22);
+};
+
+var res = function(){
+    
+    stroke(155, 18, 219);
+    strokeWeight(2);
+    fill(139, 131, 230);
+    rect(130,180,100,50);
+    if(times>2){
+        rect(100,120,160,50);
+        fill(51, 255, 0);
+        text("Hope u make it\n    One thing, \n    I bet my friend cant make it",108,134);
+        
+    }
+    
+    
+    fill(3, 3, 3);
+    text("Aw man!!!",150,200);
+    text("(press enter)",145,220);
+    
+    
+};
+var spawnMonsters = function(){
+    
+    
+    if(round(random(0,250))===1||round(random(0,250))===150){
+        
+        
+        monsters.type.length++;
+        monsters.type[monsters.type.length-1]=round(random(1,2));
+         if(monsters.type[monsters.type.length-1]===1){
+        
+        spawn="00";
+        monsters.x.length++;    
+        monsters.x[monsters.type.length-1]=random(50,350);
+        monsters.y.length++;
+        monsters.y[monsters.type.length-1]=-40;
+        monsters.veloc.length++;
+        monsters.veloc[monsters.type.length-1]=4;
+        }else if(monsters.type[monsters.type.length-1]===2){
+        
+        
+        if(bars.y[bars.y.length-1]<10){
+        monsters.x.length++;    
+        monsters.x[monsters.type.length-1]=bars.x[bars.x.length-1];
+        monsters.y.length++;
+        monsters.y[monsters.type.length-1]=bars.y[bars.y.length-1]-40; 
+        monsters.veloc.length++;
+        monsters.veloc[monsters.type.length-1]=0;
+        monsters.step.length++;
+        monsters.step[monsters.type.length-1]=1;
+        }
+        }  
+    }   
+};
+var getDamage= function(){
+    
+    if(!powerUp){
+        
+    for(var i=monsters.x.length-3;i<monsters.x.length;i++){
+    
+    if(monsters.type[i]===1){
+        
+      if(charX>monsters.x[i]-20&&charX<monsters.x[i]+70&&charY>monsters.y[i]-20&&charY<monsters.y[i]+60){
+          dazed=true;
+      } 
+    }else if(monsters.type[i]===2){
+        
+        if(charX>monsters.x[i]-30&&charX<monsters.x[i]+90&&charY>monsters.y[i]-30&&charY<monsters.y[i]+60){
+          dazed=true;
+      } 
+    }
+    
+    
+    }
+    }
+    
+    
+};
+
+var drawChar = function(){
+    
+       stroke(96, 148, 68);
+   strokeWeight(2);
+    if(facingRight){
+        mouthX= charX +33;
+        eyeX= charX + 7;
+    }else{
+        mouthX= charX-33;
+        eyeX= charX -15;
+    }
+var boy = getImage("cute/PlainBlock");
+image(boy, 100, 250);
+
+var boy = getImage("cute/PlainBlock");
+image(boy, 200, 250);
+
+var boy = getImage("cute/PlainBlock");
+image(boy, 300, 250);
+
+var boy = getImage("cute/PlainBlock");
+image(boy, 0, 250);
+
+var boy = getImage("cute/Rock");
+image(boy, -12, -54);
+
+var boy = getImage("space/star");
+image(boy, 0, 180);
+
+var boy = getImage("space/collisioncircle");
+image(boy, 50, 190);
+
+var boy = getImage("cute/Star");
+image(boy, 41, 49);
+
+var boy = getImage("cute/Star");
+image(boy, 168, -79);
+
+var boy = getImage("space/planet");
+image(boy, 262, 69);
+
+var boy = getImage("cute/Selector");
+image(boy, 149, 219);
+
+var boy = getImage("cute/Star"
+);
+image(boy, 300, 10);
+
+var boy = getImage("cute/ShadowNorth");
+image(boy, 300, 10);
+
+var boy = getImage("cute/ShadowNorth");
+image(boy, 200, -41);
+
+var boy = getImage("cute/ShadowNorth");
+image(boy, 300, -41);
+
+var boy = getImage("cute/ShadowNorth");
+image(boy, 0, -41);
+    //head
+    fill(26, 204, 83);
+    ellipse(charX-0.5,charY,41,40);
+    //body
+    stroke(84, 209, 90);
+  fill(26, 204, 83);
+
+  ellipse(charX-21,charY+-30,0,0);
+    noStroke();
+    ellipse(charX-19,charY-4,38,3);
+    //feet
+    var sole;
+    if(brace>0){
+        sole=charY+30;
+    }else{
+        sole=charY+40;
+    }
+   stroke(124, 214, 94);
+   strokeWeight(4);
+
+   line(charX+-5,sole,charX-5,charY+34);
+   line(charX+5,sole,charX+5,charY+34);
+
+   if(facingRight){
+       
+       line(charX-5,sole,charX,charY+41); 
+       line(charX+5,sole,charX+10,charY+41);
+        
+   }else{
+
+       line(charX-10,sole,charX-5,charY+41); 
+       line(charX,sole,charX+5,charY+41);
+      
+   }
+    //mouth
+    noStroke();
+    triangle(mouthX,charY-2,mouthX,charY+13,charX,charY+5);
+   
+    if(facingRight){
+        line(mouthX,charY-2,charX+20,charY+1);
+        line(mouthX,charY+11,charX+20,charY+10);
+    }else{
+        line(mouthX,charY-2,charX-20,charY+1);
+        line(mouthX,charY+11,charX-20,charY+10);
+    }
+    ellipse(mouthX,charY+5,10,15);
+    //stripes
+    fill(16, 232, 60);
+    rect(charX-21,charY+30,40,5);
+    rect(charX-21,charY+25,40,5);
+    rect(charX-21,charY+20,40,5);
+   
+    //eyes
+    fill(19, 52, 196);
+    ellipse(eyeX, charY-3, 4,5);
+    ellipse(eyeX+6, charY-3, 4,5);
+    
+    //fill(255, 0, 0);
+    //rect(feetX, feetY, 40,5);
+    if(powerUp===1000){
+    noStroke();
+        pushMatrix();
+ 
+    
+    fill(191, 57, 191);
+    arc(charX,charY-10, 35, 30, -180, 2);
+    fill(255, 255, 255);
+    arc(charX,charY-10, 30, 35, -140, -110);
+    arc(charX,charY-10, 30, 35, -70, -40);
+    fill(28, 24, 24);
+    translate(charX,charY-25);
+    if(powerLeft%4===0){
+        rotate(-10);
+    }else if(powerLeft%3===0){
+        rotate(0);
+    }else if(powerLeft%2===0){
+        rotate(10);
+    }else{
+        rotate(0);
+    }
+    ellipse(0,0,35,12);
+    noFill();
+    strokeWeight(6);
+    stroke(0, 0, 0);
+    ellipse(0,0,30,8);
+    ellipse(0,0,25,6);
+    ellipse(0,0,20,3);
+    popMatrix();
+    }
+    if(powerUp===3){
+        
+        var jp,jps;
+        if(facingRight){
+            jp=charX-31;
+            jps=charX-25;
+        }else{
+           jp=charX+30;
+           jps=charX+20;
+        }
+        stroke(0, 0, 0);
+        strokeWeight(2);
+        fill(138, 128, 128);
+        rect(jps,charY+5,3,5);
+        rect(jps+1,charY+20,1,5);
+        arc(jp,charY+30,15,80,-179,0);
+        line(jp-8,charY+30,jp+7,charY+30);
+        fill(255, 255, 0);
+        arc(jp,charY+-1,10,18,-179,0);
+        stroke(0, 0, 0);
+        line(jp-5,charY+25,jp+4,charY+25);
+        line(jp-4,charY+22,jp+3,charY+22);
+        if(powerLeft>10){
+        stroke(163, 16, 16);
+        line(jp+3,charY+32,random(jp-5,jp+2),charY+50);
+        line(jp-3,charY+32,random(jp+5,jp+2),charY+50);
+        line(jp-1,charY+32,random(jp-8,jp-4),charY+50);
+        line(jp,charY+32,random(jp+4,jp+8),charY+50);
+        line(jp,charY+32,random(jp-8,jp-4),charY+50);
+        line(jp+5,charY+32,random(jp+7,jp+10),charY+50);
+        line(jp-5,charY+32,random(jp-10,jp-7),charY+50);
+        line(jp+4,charY+32,random(jp+4,jp+10),charY+50);
+        line(jp-4,charY+32,random(jp-10,jp-4),charY+50);
+        line(jp+4,charY+32,random(jp-2,jp+2),charY+50);
+        line(jp-4,charY+32,random(jp-2,jp+2),charY+50);
+        }
+        
+    }
+            
+    powerLeft--;
+    if(powerLeft<0){
+        powerUp=0;
+    }
+    if(dazed){
+        noFill();
+        stroke(0, 0, 0);
+        image(star,charX+8,charY-37,20,30);
+        ellipse(charX,charY-20,40,15);
+        image(star,charX-20,charY-45,20,30);
+        image(star,charX-10,charY-30,20,30);
+    }
+    
+};
+
+var drawMonsters = function(){
+    for(var i=monsters.x.length-3;i<monsters.x.length;i++){
+    if(monsters.x[i]){
+    if(monsters.type[i]===1){
+    var m;    
+        fill(45, 105, 23);
+        noStroke();
+        rect(monsters.x[i],monsters.y[i]-5,30,31,5);
+        arc(monsters.x[i]+14.5,monsters.y[i],30,20,-180,0);
+        rect(monsters.x[i]+5,monsters.y[i]+25,5,5,5);
+        rect(monsters.x[i]+20,monsters.y[i]+25,5,5,5);
+        fill(255, 238, 0);
+        stroke(0, 0, 0);
+        strokeWeight(2);
+        if(monsters.veloc[i]<0){
+        ellipse(monsters.x[i]+10,monsters.y[i],10,10);
+        ellipse(monsters.x[i]+10,monsters.y[i],3,3);
+        for(m=0;m<3;m++){
+            fill(212, 53, 53);
+            strokeWeight(1);
+            arc(monsters.x[i]+5*m+6,monsters.y[i]+10,5,10,0,180);
+        }
+        }else{
+        ellipse(monsters.x[i]+20,monsters.y[i],10,10);
+        ellipse(monsters.x[i]+20,monsters.y[i],3,3);
+        for(m=0;m<3;m++){
+            fill(230, 223, 223);
+            strokeWeight(1);
+            arc(monsters.x[i]+5*m+15,monsters.y[i]+10,5,10,0,180);
+        }
+        }
+    monsters.x[i]+=monsters.veloc[i];
+    
+    if(monsters.x[i]>350){
+        monsters.veloc[i]=-6;
+        
+    }
+    if(monsters.x[i]<50){
+        monsters.veloc[i]=6;
+    }
+        
+    }else if(monsters.type[i]===2){
+        fill(102, 88, 88);
+        noStroke();
+        rect(monsters.x[i]+5,monsters.y[i],40,20,10);
+        rect(monsters.x[i],monsters.y[i]+10,50,20,10);
+        rect(monsters.x[i]+10,monsters.y[i]+25,5,10,6);
+        rect(monsters.x[i]+35,monsters.y[i]+25,5,10,6);
+        rect(monsters.x[i]+5,monsters.y[i]+33,10,5,6);
+        rect(monsters.x[i]+35,monsters.y[i]+33,10,5,6);
+        fill(255, 0, 26);
+        arc(monsters.x[i]+25,monsters.y[i]+25,30,10,-180,0);
+        stroke(0, 0, 0);
+        strokeWeight(5);
+        fill(250, 0, 0);
+        ellipse(monsters.x[i]+15,monsters.y[i]+10,5,5);
+        ellipse(monsters.x[i]+35,monsters.y[i]+10,5,5);
+        strokeWeight(2);
+        line(monsters.x[i]+25,monsters.y[i]+10,monsters.x[i]+10,monsters.y[i]+5);
+        line(monsters.x[i]+25,monsters.y[i]+10,monsters.x[i]+40,monsters.y[i]+5);
+        
+        if(monsters.step[i]){
+            monsters.veloc[i]--;
+        }else{
+            monsters.veloc[i]++;
+        }
+        if(monsters.veloc[i]<-6){
+            monsters.step[i]=0;
+        }
+        if(monsters.step[i]===1&&monsters.veloc===0){
+            monsters.veloc[i]=-6;
+        }
+        if(monsters.veloc[i]>6){
+            monsters.step[i]=1;
+        }
+        monsters.y[i]+=monsters.veloc[i];
+        
+    }
+    }
+    }
+};
+
+var powers = function(){
+    
+    //propeller
+    if(powerUp===128){
+        jumpSpeed=1;
+        jumping=true;
+    }
+    //jet pack
+    if(powerUp===196){
+        jumpSpeed=50;
+        jumping=true;
+    }
+    
+};
+
+
+var drawSteps = function(n){
+    
+    
+    if(bars.type[n]===3||bars.type[n]===4||bars.type[n]===5){
+    stroke(120, 112, 112);
+    strokeWeight(3);
+    if(!bars.used[n]){
+    line(bars.x[n]+20, bars.y[n]-2,bars.x[n]+30, bars.y[n]-4);
+    line(bars.x[n]+20, bars.y[n]-6,bars.x[n]+30, bars.y[n]-4);
+     line(bars.x[n]+20, bars.y[n]-6,bars.x[n]+30, bars.y[n]-8);
+      line(bars.x[n]+20, bars.y[n]-10,bars.x[n]+30, bars.y[n]-8);
+    }else{
+       line(bars.x[n]+20, bars.y[n],bars.x[n]+30, bars.y[n]-8);
+    line(bars.x[n]+20, bars.y[n]-12,bars.x[n]+30, bars.y[n]-8);
+     line(bars.x[n]+20, bars.y[n]-12,bars.x[n]+30, bars.y[n]-16);
+      line(bars.x[n]+20, bars.y[n]-20,bars.x[n]+30, bars.y[n]-16); 
+    }
+    
+    }else if(bars.type[n]===6&&!bars.used[n]){
+    noStroke();
+    fill(255, 0, 0);
+    arc(bars.x[n]+25, bars.y[n], 30, 35, -196, 2);
+    fill(255, 221, 0);
+    arc(bars.x[n]+25, bars.y[n], 30, 35, -140, -110);
+    arc(bars.x[n]+25, bars.y[n], 30, 35, -70, -40);
+    fill(148, 142, 142);
+
+    ellipse(bars.x[n]+25, bars.y[n]-20,25,8);
+    
+    }else if(bars.type[n]===7&&!bars.used[n]){
+
+        strokeWeight(2);
+        stroke(0, 0, 0);
+        fill(138, 128, 128);
+        rect(bars.x[n]+15,bars.y[n]-25,20,5);
+        rect(bars.x[n]+15,bars.y[n]-10,20,5);
+        arc(bars.x[n]+15,bars.y[n],15,80,-179,0);
+        arc(bars.x[n]+35,bars.y[n],15,80,-179,0);
+        fill(247, 255, 0);
+        arc(bars.x[n]+15,bars.y[n]-30,10,20,-179,0);
+        arc(bars.x[n]+35,bars.y[n]-30,10,20,-179,0);
+        line(bars.x[n]+32,bars.y[n]-5,bars.x[n]+37,bars.y[n]-5);
+        line(bars.x[n]+32,bars.y[n]-8,bars.x[n]+37,bars.y[n]-8);
+        line(bars.x[n]+12,bars.y[n]-5,bars.x[n]+17,bars.y[n]-5);
+        line(bars.x[n]+12,bars.y[n]-8,bars.x[n]+17,bars.y[n]-8);
+    }
+
+    fill(86, 94, 83);
+    strokeWeight(6);
+    if(bars.type[n]===12||bars.type[n]===12){
+        fill(43, 45, 46);
+        bars.x[n]+=bars.veloc[n];
+        if(bars.x[n]>bars.Rmax[n]){
+            bars.veloc[n]=-4;
+        }
+        if(bars.x[n]<bars.Rmax[n]-100){
+            bars.veloc[n]=4;
+        }
+        
+    }
+    stroke(0, 0, 0);
+    rect(bars.x[n], bars.y[n], 50,10,6);
+    noStroke();
+    fill(237, 234, 237,190);
+    rect(bars.x[n]+5, bars.y[n]+4,5,3);
+};
+
+var scroll = function(){
+    if(jumping){
+    charY = 140;
+    for(var n=bars.x.length-5;n<bars.y.length;n++){
+    bars.y[n]+=jumpSpeed*2;
+    score += jumpSpeed/100;
+    }
+    for(var i=monsters.x.length-5;i<monsters.x.length;i++){
+        monsters.y[i]+=jumpSpeed*2;
+    }
+    spawnMonsters();
+    }
+};
+
+var jump = function(){
+    
+    charY -=jumpSpeed*1.6;
+    if(loopCount === 1){
+        
+       
+            
+        if(jumpSpeed>7){
+            jumpSpeed--;
+        }else{
+            jumping =false;
+        }
+        
+    }
+    
+};
+
+var fall = function(){
+    
+    charY += fallSpeed*1;
+    if(loopCount === 1){
+   if(fallSpeed<12){
+   fallSpeed++;
+    }else{
+      
+    }
+    }
+};
+
+
+
+var bounce = function(n){
+    
+     feetX = charX+-15;
+feetY = charY+40 ;
+    
+    if(!dazed){
+    if(feetX>bars.x[n]-40 && feetX<bars.x[n]+60 && feetY>bars.y[n]-5 && feetY<bars.y[n]+15){
+        
+        if(powerUp===0){
+        
+        //spring
+        if(bars.type[n]===3||bars.type[n]===4||bars.type[n]===5){
+            powerUp=10;
+            jumpSpeed=22;
+            bars.used[n]=1;
+        //propeller cap
+        }else if (bars.type[n]===6){
+            powerUp=2;
+            bars.used[n]=1;
+            powerLeft=80;
+        }else if (bars.type[n]===7){
+            powerUp=3;
+            bars.used[n]=1;
+            powerLeft=100;
+        }else{
+            powerUp=0;
+        }
+        brace=6;
+        }
+        
+        falling = false;
+        jumping=true;
+        
+    }
+    for(var i=monsters.x.length-3;i<monsters.x.length;i++){
+    
+    if(monsters.type[i]===1){
+    if(feetX>monsters.x[i]-40 && feetX<monsters.x[i]+40 && feetY>monsters.y[i]-10 && feetY<monsters.y[i]+0){
+        
+        falling = false;
+        jumping=true;
+        monsters.type[i]=0;
+        monsters.x[i]=0;
+        monsters.y[i]=0;
+        brace=6;
+    }
+    }
+    if(monsters.type[i]===2){
+        
+        if(feetX>monsters.x[i]-50 && feetX<monsters.x[i]+80 && feetY>monsters.y[i]-15 && feetY<monsters.y[i]+0){
+        
+        falling = false;
+        jumping=true;
+        monsters.type[i]=0;
+        monsters.x[i]=0;
+        monsters.y[i]=0;
+        brace=6;
+    }
+    }
+    
+    }
+    }
+};
+
+
+
+var spawnBars=function(){
+    for(var n=bars.x.length-4;n<bars.x.length;n++){  
+    if(bars.y[n-1]>520){
+       bars.x.length++;
+       bars.x[bars.x.length-1]=random(50,350);
+       bars.y.length++;
+       bars.y[bars.y.length-1]=random(-180,-120);
+       bars.type.length++;
+       for(;bars.y[bars.y.length-2]>bars.y[bars.y.length-1]+120;bars.y[bars.y.length-1]+=10){  }
+       bars.type[bars.y.length-1]=round(random(0,35));
+       bars.used[bars.y.length-1]=0;
+       if(bars.type[bars.y.length-1]===12||bars.type[bars.y.length-1]===13){
+           bars.Rmax[bars.y.length-1]=bars.x[bars.y.length-1]+100;
+           if(bars.Rmax[bars.y.length-1]>350){
+               bars.Rmax[bars.y.length-1]=350;
+           }
+       }
+       bars.veloc[bars.y.length-1]=4;
+   }
+    }
+    
+};
+
+var draw = function() {
+    
+   
+   
+    
+    //background graph paper
+    background(15, 41, 125);
+    count();
+    
+    
+    if(!state){
+    
+        stroke(0, 0, 0);
+      makeButton(180,110,"Play Now! ",start);
+    feetX = charX+-15;
+    feetY = charY+40 ;
+      stroke(0, 0, 0);
+      fill(72, 255, 0);
+      rect(280,300, 50,10,6);
+      if(feetX>280-40 && feetX<280+60 && feetY>300-5 && feetY<300+15){
+      falling = false;
+      jumping=true; 
+      
+      }
+    }
+    
+    //draw man
+    noStroke();
+    drawChar();
+    
+    if(state===1){
+    powers();
+    
+    for(var t=0;t<bars.x.length;t++){
+    if(t<520){
+    spawnBars(bars.x.length-(5-t));
+    drawSteps(bars.x.length-(5-t));
+    bounce(bars.x.length-(5-t));
+    }
+    }
+    if(charY<140){
+   scroll(bars.x.length-(5-t));
+    }
+
+   getDamage();
+   drawMonsters();
+    }
+   
+   //jump
+   if(jumping){
+   jump();
+   }else{
+       jumpSpeed = 11.5;
+   }
+   
+   //fall
+   if(falling){
+       fall();
+   }else{
+       fallSpeed = 1;
+   }
+   if(state===1){
+   //move
+   if(goRight){
+      charX+= velocity; 
+      charY-=0.4;
+   }
+   if(goLeft){
+       charX-= velocity;
+       charY-=0.4;
+   }
+   }
+   stroke(0, 0, 0);
+   fill(117, 110, 110,120);
+   rect(0,-5,400,25);
+   //data
+   fill(0, 0, 0);
+   //text(round(ifSpring)+"---"+spring1, 100,50);
+   textFont(scoreText,18);
+   text(round(score), 60, 15);
+  
+   //￪ leave this here ⬆
+   textFont(normText,12);
+   /*
+   text(round(bars.x[1])+" - "+round(bars.y[1]),100,100);
+   text(spawn,100,30); 
+   */
+   //println(brace);
+   spawn="___";
+    
+    if(!jumping){
+        falling=true;
+    }else{
+        falling = false;
+    }
+     
+    brace--; 
+    
+    if(charY>450){
+        dead=true;
+        jumping=false;
+        falling=false;
+        res();
+    }
+};
+
+
+
+var keyPressed = function(){
+    
+    
+    if(keyCode===LEFT){
+       
+      
+       facingRight = false;
+       goLeft=true;   
+    }
+    
+    if(keyCode===RIGHT){
+     facingRight = true;
+     goRight=true;
+    }
+    
+};
+
+var keyReleased = function(){
+    
+    if(keyCode===LEFT){
+       goLeft=false;
+       velocity=8;
+      
+    }
+     
+      if(keyCode===RIGHT){
+        
+        goRight=false;
+       velocity=8;
+        
+    }
+    
+    if(keyCode===ENTER&&state){
+        
+        restart();
+    }
+   
+};
